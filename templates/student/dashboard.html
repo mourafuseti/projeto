@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Dashboard do Aluno{% endblock %}
+{% block content %}
+<h2 class="text-2xl mb-6">Dashboard do Aluno</h2>
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl mb-4">Bem-vindo, {{ user['name'] }}!</h3>
+    <p><strong>Email:</strong> {{ user['email'] or 'Não informado' }}</p>
+    <p><strong>Telefone:</strong> {{ user['phone'] or 'Não informado' }}</p>
+    <p><strong>Endereço:</strong> {{ user['address'] or 'Não informado' }}</p>
+    <p><strong>Cidade:</strong> {{ user['city'] or 'Não informado' }}</p>
+
+    <!-- Calendário de Treinos -->
+    <h3 class="text-xl mb-4">Calendário de Treinos</h3>
+    <div id="calendar" class="border rounded-md p-3 mb-4 bg-white" style="min-height: 200px; margin-top: 0;"></div>
+    <p id="calendar-error" class="text-red-500 hidden">Erro ao carregar o calendário.</p>
+
+    <!-- Tabela de Medidas Corporais -->
+    <h3 class="text-xl mb-4">Medidas Corporais</h3>
+    {% if measurements %}
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="border p-2">Peso (kg)</th>
+                <th class="border p-2">Altura (m)</th>
+                <th class="border p-2">IMC</th>
+                <th class="border p-2">Data da Medição</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="border p-2">{{ measurements['weight'] }}</td>
+                <td class="border p-2">{{ measurements['height'] }}</td>
+                <td class="border p-2">{{ measurements['imc'] }}</td>
+                <td class="border p-2">{{ measurements['measured_at'] }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhuma medida corporal registrada.</p>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        flatpickr("#calendar", {
+            locale: "pt",
+            inline: true,
+            defaultDate: new Date(),
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr) {
+                const daysOfWeek = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+                const selectedDate = new Date(dateStr);
+                const dayName = daysOfWeek[selectedDate.getDay()];
+                console.log(`Redirecionando para treinos de ${dayName} (${dateStr})`);
+                window.location.href = `/student/workouts?selected_day=${encodeURIComponent(dayName)}`;
+            }
+        });
+        console.log('Calendário inicializado com sucesso');
+    } catch (error) {
+        console.error('Erro ao inicializar o calendário:', error);
+        document.getElementById('calendar-error').classList.remove('hidden');
+    }
+});
+</script>
+{% endblock %}

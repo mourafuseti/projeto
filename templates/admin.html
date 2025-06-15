@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Sistema de Gerenciamento de Academia</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Painel Administrativo</h1>
+            <ul class="flex space-x-4">
+                <li><a href="{{ url_for('admin_dashboard') }}" class="hover:underline">Dashboard</a></li>
+                <li><a href="{{ url_for('manage_students') }}" class="hover:underline">Alunos</a></li>
+                <li><a href="{{ url_for('manage_workouts') }}" class="hover:underline">Treinos</a></li>
+                <li><a href="{{ url_for('manage_payments') }}" class="hover:underline">Pagamentos</a></li>
+                <li><a href="{{ url_for('admin_messages') }}" class="hover:underline">Mensagens</a></li>
+                <li><a href="{{ url_for('logout') }}" class="hover:underline">Sair</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mx-auto mt-6">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

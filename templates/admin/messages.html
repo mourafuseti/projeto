@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl mb-4">Mensagens</h2>
+<div class="bg-white p-6 rounded shadow-md">
+    <!-- Formulário de Enviar Mensagem -->
+    <h3 class="text-xl mb-4">Enviar Mensagem</h3>
+    <form method="POST" class="mb-6">
+        <div class="mb-4">
+            <label for="student_id" class="block text-gray-700">Selecionar Aluno:</label>
+            <select name="student_id" id="student_id" class="p-2 border rounded-lg w-full max-w-sm">
+                {% for student in students %}
+                <option value="{{ student['id'] }}">{{ student['name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-4">
+            <label for="content" class="block text-gray-700">Mensagem:</label>
+            <textarea name="content" id="content" class="p-2 border rounded-lg w-full" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Enviar</button>
+    </form>
+
+    <!-- Comprovantes de Pagamento -->
+    <h3 class="text-xl mb-4">Comprovantes de Pagamento Enviados</h3>
+    {% if receipts %}
+    <table class="w-full border-collapse mb-6">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="border p-2">Aluno</th>
+                <th class="border p-2">Valor</th>
+                <th class="border p-2">Data de Vencimento</th>
+                <th class="border p-2">Comprovante</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for receipt in receipts %}
+            <tr>
+                <td class="border p-2">{{ receipt['student_name'] }}</td>
+                <td class="border p-2">R$ {{ "%.2f" % receipt['amount'] }}</td>
+                <td class="border p-2">{{ receipt['due_date'] }}</td>
+                <td class="border p-2">
+                    <a href="{{ url_for('static', filename='uploads/' + receipt['receipt']) }}" target="_blank" class="text-blue-500 hover:underline">Ver Comprovante</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="mb-6">Nenhum comprovante enviado.</p>
+    {% endif %}
+
+    <!-- Exibição de Mensagens -->
+    <h3 class="text-xl mb-4">Mensagens Recebidas e Enviadas</h3>
+    {% if messages %}
+    <div class="space-y-4">
+        {% for message in messages %}
+        <div class="border p-4 rounded-lg">
+            <p><strong>De:</strong> {{ message['sender_name'] }}</p>
+            <p><strong>Mensagem:</strong> {{ message['content'] }}</p>
+            <p><strong>Data:</strong> {{ message['timestamp'] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>Nenhuma mensagem encontrada.</p>
+    {% endif %}
+</div>
+{% endblock %}

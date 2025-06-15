@@ -1,0 +1,83 @@
+{% extends "admin.html" %}
+{% block content %}
+<h2 class="text-3xl mb-6">Gerenciamento de Pagamentos</h2>
+
+<!-- Adicionar Pagamento -->
+<div class="bg-white p-6 rounded-lg shadow-md mb-6">
+    <h3 class="text-xl mb-4">Adicionar Pagamento</h3>
+    <form method="POST">
+        <input type="hidden" name="add" value="1">
+        <div class="mb-4">
+            <label for="student_id" class="block text-sm font-medium text-gray-700">Aluno</label>
+            <select id="student_id" name="student_id" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                {% for student in students %}
+                <option value="{{ student['id'] }}">{{ student['name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-4">
+            <label for="amount" class="block text-sm font-medium text-gray-700">Valor (R$)</label>
+            <input type="number" step="0.01" id="amount" name="amount" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+        </div>
+        <div class="mb-4">
+            <label for="due_date" class="block text-sm font-medium text-gray-700">Data de Vencimento</label>
+            <input type="date" id="due_date" name="due_date" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+        </div>
+        <div class="mb-4">
+            <label for="pix_key" class="block text-sm font-medium text-gray-700">Chave Pix</label>
+            <input type="text" id="pix_key" name="pix_key" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+        </div>
+        <button type="submit" class="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">Cadastrar</button>
+    </form>
+</div>
+
+<!-- Lista de Pagamentos -->
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl mb-4">Lista de Pagamentos</h3>
+    {% if payments %}
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="border p-2">Aluno</th>
+                <th class="border p-2">Valor (R$)</th>
+                <th class="border p-2">Data de Vencimento</th>
+                <th class="border p-2">QR Code</th>
+                <th class="border p-2">Comprovante</th>
+                <th class="border p-2">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td class="border p-2">{{ payment['name'] }}</td>
+                <td class="border p-2">{{ payment['amount'] }}</td>
+                <td class="border p-2">{{ payment['due_date'] }}</td>
+                <td class="border p-2">
+                    {% if payment['qr_code'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + payment['qr_code']) }}" alt="QR Code" class="h-16 w-auto">
+                    {% endif %}
+                </td>
+                <td class="border p-2">
+                    {% if payment['receipt'] %}
+                    <a href="{{ url_for('static', filename='uploads/' + payment['receipt']) }}" target="_blank" class="text-blue-600 hover:underline">Ver Comprovante</a>
+                    {% endif %}
+                </td>
+                <td class="border p-2">
+                    <form method="POST" class="inline">
+                        <input type="hidden" name="edit_id" value="{{ payment['id'] }}">
+                        <button type="submit" class="text-blue-600 hover:underline">Editar</button>
+                    </form>
+                    <form method="POST" class="inline ml-2">
+                        <input type="hidden" name="delete" value="{{ payment['id'] }}">
+                        <button type="submit" class="text-red-600 hover:underline">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhum pagamento cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

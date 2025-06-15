@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl mb-4">Mensagens</h2>
+<!-- Formulário de Envio -->
+<div class="bg-white p-6 rounded shadow-md mb-6">
+    <h3 class="text-xl mb-4">Enviar Mensagem</h3>
+    <form method="POST">
+        <div class="mb-4">
+            <label class="block text-gray-700">Mensagem</label>
+            <textarea name="content" class="w-full p-2 border rounded" required></textarea>
+        </div>
+        <button type="submit" class="bg-blue-600 text-white p-2 rounded">Enviar</button>
+    </form>
+</div>
+<!-- Lista de Mensagens -->
+<div class="bg-white p-6 rounded shadow-md">
+    {% for message in messages %}
+    <div class="border-b py-2">
+        <p><strong>{{ message['name'] }}</strong> ({{ message['timestamp'] }}): {{ message['content'] }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

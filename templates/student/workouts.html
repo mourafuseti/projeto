@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl mb-4">Planos de Treino</h2>
+<div class="bg-white p-6 rounded shadow-md">
+    <!-- Formulário de Seleção de Dia -->
+    <div class="mb-6">
+        <form method="POST" class="flex items-center">
+            <label for="selected_day" class="mr-2 text-gray-700">Selecionar Dia:</label>
+            <select name="selected_day" id="selected_day" class="p-2 border rounded" onchange="this.form.submit()">
+                <option value="Todos" {% if selected_day == 'Todos' %}selected{% endif %}>Todos</option>
+                {% for day in days_order %}
+                <option value="{{ day }}" {% if selected_day == day %}selected{% endif %}>{{ day }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <!-- Estilos CSS para disposição horizontal -->
+    <style>
+        .workout-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .workout-card {
+            flex: 0 0 calc(20% - 1rem); /* Aproximadamente 3 cards por linha, ajustando para o gap */
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+        .workout-card img {
+            max-width: 80%;
+            height: auto;
+            border-radius: 4px;
+        }
+        @media (max-width: 768px) {
+            .workout-card {
+                flex: 0 0 calc(50% - 1rem); /* 2 cards por linha em telas menores */
+            }
+        }
+        @media (max-width: 480px) {
+            .workout-card {
+                flex: 0 0 100%; /* 1 card por linha em telas muito pequenas */
+            }
+        }
+    </style>
+
+    <!-- Exibição dos Treinos -->
+    {% if selected_day and selected_day != 'Todos' %}
+        <!-- Mostrar apenas treinos do dia selecionado -->
+        <h3 class="text-xl font-bold mb-2">{{ selected_day }}</h3>
+        {% if workouts %}
+            <div class="workout-container">
+                {% for workout in workouts %}
+                <div class="workout-card">
+                    <p><strong>Descrição:</strong> {{ workout['description'] }}</p>
+                    <p><strong>Dias da Semana:</strong> {{ workout['days_of_week'] or 'Não especificado' }}</p>
+                    {% if workout['photo'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + workout['photo']) }}" alt="Foto do treino">
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Nenhum treino encontrado para {{ selected_day }}.</p>
+        {% endif %}
+    {% else %}
+        <!-- Mostrar todos os treinos agrupados por dia -->
+        {% for day in days_order %}
+            {% if workouts_by_day[day] %}
+            <div class="mb-6">
+                <h3 class="text-xl font-bold mb-2">{{ day }}</h3>
+                <div class="workout-container">
+                    {% for workout in workouts_by_day[day] %}
+                    <div class="workout-card">
+                        <p><strong>Descrição:</strong> {{ workout['description'] }}</p>
+                        <p><strong>Dias da Semana:</strong> {{ workout['days_of_week'] or 'Não especificado' }}</p>
+                        {% if workout['photo'] %}
+                        <img src="{{ url_for('static', filename='uploads/' + workout['photo']) }}" alt="Foto do treino">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

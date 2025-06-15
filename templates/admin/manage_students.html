@@ -1,0 +1,155 @@
+{% extends "admin.html" %}
+{% block content %}
+<h2 class="text-2xl mb-6">Gerenciamento de Alunos</h2>
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <!-- Formulário para Adicionar Aluno -->
+    <h3 class="text-xl mb-4">Adicionar Novo Aluno</h3>
+    <form method="POST" class="mb-4">
+        <input type="hidden" name="add" value="add">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="username" class="block text-gray-700">Username</label>
+                <input type="text" name="username" id="username" class="p-2 border rounded-lg w-full" required>
+            </div>
+            <div>
+                <label for="password" class="block text-gray-700">Senha</label>
+                <input type="password" name="password" id="password" class="p-2 border rounded-lg w-full" required>
+            </div>
+            <div>
+                <label for="name" class="block text-gray-700">Nome</label>
+                <input type="text" name="name" id="name" class="p-2 border rounded-lg w-full" required>
+            </div>
+            <div>
+                <label for="email" class="block text-gray-700">Email</label>
+                <input type="email" name="email" id="email" class="p-2 border rounded-lg w-full">
+            </div>
+            <div>
+                <label for="phone" class="block text-gray-700">Telefone</label>
+                <input type="text" name="phone" id="phone" class="p-2 border rounded-lg w-full">
+            </div>
+            <div>
+                <label for="address" class="block text-gray-700">Endereço</label>
+                <input type="text" name="address" id="address" class="p-2 border rounded-lg w-full">
+            </div>
+            <div>
+                <label for="city" class="block text-gray-700">Cidade</label>
+                <input type="text" name="city" id="city" class="p-2 border rounded-lg w-full">
+            </div>
+            <div>
+                <label for="weight" class="block text-gray-700">Peso (kg)</label>
+                <input type="number" name="weight" id="weight" step="0.01" min="0" class="p-2 border rounded-lg w-full" required>
+            </div>
+            <div>
+                <label for="height" class="block text-gray-700">Altura (m)</label>
+                <input type="number" name="height" id="height" step="0.01" min="0.1" class="p-2 border rounded-lg w-full" required>
+            </div>
+        </div>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">Cadastrar</button>
+    </form>
+
+    <!-- Lista de Alunos -->
+    <h3 class="text-xl mb-4">Lista de Alunos</h3>
+    {% if students %}
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="border p-2">Nome</th>
+                    <th class="border p-2">Username</th>
+                    <th class="border p-2">Email</th>
+                    <th class="border p-2">Telefone</th>
+                    <th class="border p-2">Endereço</th>
+                    <th class="border p-2">Cidade</th>
+                    <th class="border p-2">Peso (kg)</th>
+                    <th class="border p-2">Altura (m)</th>
+                    <th class="border p-2">IMC</th>
+                    <th class="border p-2">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td class="border p-2">{{ student['name'] }}</td>
+                    <td class="border p-2">{{ student['username'] }}</td>
+                    <td class="border p-2">{{ student['email'] }}</td>
+                    <td class="border p-2">{{ student['phone'] }}</td>
+                    <td class="border p-2">{{ student['address'] }}</td>
+                    <td class="border p-2">{{ student['city'] }}</td>
+                    <td class="border p-2">{{ student['weight'] or '-' }}</td>
+                    <td class="border p-2">{{ student['height'] or '-' }}</td>
+                    <td class="border p-2">{{ student['imc'] or '-' }}</td>
+                    <td class="border p-2">
+                        <button onclick="showEditForm('{{ student['id'] }}', '{{ student['name'] }}', '{{ student['email'] }}', '{{ student['phone'] }}', '{{ student['address'] }}', '{{ student['city'] }}', '{{ student['weight'] }}', '{{ student['height'] }}')"
+                               class="text-blue-500 hover:underline">Editar</button>
+                        <form method="POST" class="inline">
+                            <input type="hidden" name="delete" value="delete">
+                            <input type="hidden" name="user_id" value="{{ student['id'] }}">
+                            <button type="submit" class="text-red-500 hover:underline">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="text-center">Nenhum aluno cadastrado.</p>
+    {% endif %}
+
+    <!-- Formulário para Editar Aluno (oculta por padrão) -->
+    <div id="editForm" class="hidden bg-white p-6 rounded-lg shadow-md mt-6">
+        <h3 class="text-xl mb-4">Editar Aluno</h3>
+        <form method="POST">
+            <input type="hidden" name="edit" value="edit">
+            <input type="hidden" id="edit_user_id" name="user_id">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="edit_name" class="block text-gray-700">Nome</label>
+                    <input type="text" name="name" id="edit_name" class="p-2 border rounded-lg w-full" required>
+                </div>
+                <div>
+                    <label for="edit_email" class="block text-gray-700">Email</label>
+                    <input type="email" name="email" id="edit_email" class="p-2 border rounded-lg w-full">
+                </div>
+                <div>
+                    <label for="edit_phone" class="block text-gray-700">Telefone</label>
+                    <input type="text" name="phone" id="edit_phone" class="p-2 border rounded-lg w-full">
+                </div>
+                <div>
+                    <label for="edit_address" class="block text-gray-700">Endereço</label>
+                    <input type="text" name="address" id="edit_address" class="p-2 border rounded-lg w-full">
+                </div>
+                <div>
+                    <label for="edit_city" class="block text-gray-700">Cidade</label>
+                    <input type="text" name="city" id="edit_city" class="p-2 border rounded-lg w-full">
+                </div>
+                <div>
+                    <label for="edit_weight" class="block text-gray-700">Peso (kg)</label>
+                    <input type="number" name="weight" id="edit_weight" step="0.01" min="0" class="p-2 border rounded-lg w-full" required>
+                </div>
+                <div>
+                    <label for="edit_height" class="block text-gray-700">Altura (m)</label>
+                    <input type="number" name="height" id="edit_height" step="0.01" min="0.1" class="p-2 border rounded-lg w-full" required>
+                </div>
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">Salvar</button>
+            <button type="button" onclick="hideEditForm()" class="bg-gray-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-gray-600">Cancelar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function showEditForm(id, name, email, phone, address, city, weight, height) {
+    document.getElementById('edit_user_id').value = id;
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_email').value = email;
+    document.getElementById('edit_phone').value = phone;
+    document.getElementById('edit_address').value = address;
+    document.getElementById('edit_city').value = city;
+    document.getElementById('edit_weight').value = weight;
+    document.getElementById('edit_height').value = height;
+    document.getElementById('editForm').classList.remove('hidden');
+}
+function hideEditForm() {
+    document.getElementById('editForm').classList.add('hidden');
+}
+</script>
+{% endblock %}

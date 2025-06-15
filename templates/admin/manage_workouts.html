@@ -1,0 +1,84 @@
+{% extends "admin.html" %}
+{% block content %}
+<h2 class="text-3xl mb-6">Gerenciamento de Treinos</h2>
+
+<!-- Adicionar Treino -->
+<div class="bg-white p-6 rounded-lg shadow-md mb-6">
+    <h3 class="text-xl mb-4">Adicionar Treino Pleno</h3>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="add" value="1">
+        <div class="mb-4">
+            <label for="student_id" class="block text-sm font-medium text-gray-700">Aluno</label>
+            <select id="student_id" name="student_id" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                {% for student in students %}
+                <option value="{{ student['id'] }}">{{ student['name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-4">
+            <label for="description" class="block text-sm font-medium text-gray-700">Descrição</label>
+            <textarea id="description" name="description" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required></textarea>
+        </div>
+        <div class="mb-4">
+            <label for="days_of_week" class="block text-sm font-medium text-gray-700">Dias da Semana</label>
+            <div class="flex flex-wrap gap-2">
+                {% for day in ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'] %}
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="days_of_week" value="{{ day }}" class="mr-2">
+                    {{ day }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="photo" class="block text-sm font-medium text-gray-700">Foto</label>
+            <input type="file" id="photo" name="photo" class="mt-1 block w-full">
+        </div>
+        <button type="submit" class="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">Cadastrar</button>
+    </form>
+</div>
+
+<!-- Lista de Treinos -->
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl mb-4">Lista de Treinos</h3>
+    {% if workouts %}
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="border p-2">Aluno</th>
+                <th class="border p-2">Descrição</th>
+                <th class="border p-2">Dias da Semana</th>
+                <th class="border p-2">Foto</th>
+                <th class="border p-2">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for workout in workouts %}
+            <tr>
+                <td class="border p-2">{{ workout['name'] }}</td>
+                <td class="border p-2">{{ workout['description'] }}</td>
+                <td class="border p-2">{{ workout['days_of_week'] }}</td>
+                <td class="border p-2">
+                    {% if workout['photo'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + workout['photo']) }}" alt="Treino" class="h-16 w-auto">
+                    {% endif %}
+                </td>
+                <td class="border p-2">
+                    <form method="POST" class="inline">
+                        <input type="hidden" name="edit_id" value="{{ workout['id'] }}">
+                        <button type="submit" class="text-blue-600 hover:underline">Editar</button>
+                    </form>
+                    <form method="POST" class="inline ml-2">
+                        <input type="hidden" name="delete" value="{{ workout['id'] }}">
+                        <button type="submit" class="text-red-600 hover:underline">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhum treino cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}
